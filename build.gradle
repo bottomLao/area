@@ -1,0 +1,17 @@
+group 'com.bottomlao'
+version '1.0-SNAPSHOT'
+
+//apply plugin: 'groovy'
+apply plugin: 'java'
+apply plugin: 'war'
+
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
+
+repositories {
+    maven { url "http://10.211.254.27:8081/nexus/content/groups/public/" }
+    jcenter()
+    mavenCentral()
+}
+
+sourceSets*.allSource.srcDirs.flatten()*.mkdirs()
