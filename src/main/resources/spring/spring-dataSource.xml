@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close"
+          p:driverClassName="com.mysql.jdbc.Driver" p:url="${jdbc.uc.url}" p:username="${jdbc.uc.username}"
+          p:password="${jdbc.uc.password}" p:dbType="mysql" p:filters="log4j" p:useGloalDataSourceStat="true"
+          p:validationQuery="SELECT 'x';" p:testWhileIdle="true" p:testOnBorrow="false" p:testOnReturn="false">
+        <property name="connectProperties">
+            <props>
+                <prop key="allowMultiQueries">true</prop>
+            </props>
+        </property>
+    </bean>
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
+          p:dataSource-ref="dataSource"/>
+    <bean id="sessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean" p:dataSource-ref="dataSource"
+          p:typeAliasesPackage="com.nxin.farm.farms.bo,com.nxin.farm.organization.bo,com.nxin.farm.user.bo,com.nxin.farm.menu.bo,com.nxin.farm.area.bo,com.nxin.farm.business.bo,com.nxin.farm.fund.bo"
+          p:configLocation="classpath:mybatis-config.xml">
+        <property name="plugins">
+            <array>
+                <bean class="com.github.pagehelper.PageHelper">
+                    <property name="properties">
+                        <value>
+                            dialect=mysql
+                            reasonable=true
+                        </value>
+                    </property>
+                </bean>
+            </array>
+        </property>
+    </bean>
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer" p:basePackage="com.nxin.**.dao"/>
+    <tx:advice id="advice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="delete*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception"/>
+            <tx:method name="disable" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception"/>
+            <tx:method name="insert*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception"/>
+            <tx:method name="update*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception"/>
+            <tx:method name="add*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception"/>
+            <tx:method name="find*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception"/>
+            <tx:method name="get*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception"/>
+            <tx:method name="select*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception"/>
+        </tx:attributes>
+    </tx:advice>
+    <aop:config>
+        <aop:pointcut id="pointcut" expression="execution(public * com.nxin..service.*.*(..))"/>
+        <!--把事务控制在Service层-->
+        <aop:advisor pointcut-ref="pointcut" advice-ref="advice"/>
+    </aop:config>
+
+</beans>
