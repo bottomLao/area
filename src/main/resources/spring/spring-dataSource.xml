@@ -34,7 +34,7 @@
             </array>
         </property>
     </bean>
-    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer" p:basePackage="com.nxin.**.dao"/>
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer" p:basePackage="com.bottomlao.**.dao"/>
     <tx:advice id="advice" transaction-manager="transactionManager">
         <tx:attributes>
             <tx:method name="delete*" propagation="REQUIRED" read-only="false" rollback-for="java.lang.Exception"/>
@@ -48,7 +48,7 @@
         </tx:attributes>
     </tx:advice>
     <aop:config>
-        <aop:pointcut id="pointcut" expression="execution(public * com.nxin..service.*.*(..))"/>
+        <aop:pointcut id="pointcut" expression="execution(public * com.bottomlao..service.*.*(..))"/>
         <!--把事务控制在Service层-->
         <aop:advisor pointcut-ref="pointcut" advice-ref="advice"/>
     </aop:config>
